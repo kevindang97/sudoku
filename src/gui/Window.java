@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -87,9 +88,7 @@ public class Window {
     menu.add(menuItemQuit);
 
     sudoku = new Sudoku();
-    for (int i = 0; i < 81; i++) {
-      sudoku.setCell(i / 9, i % 9, i % 10);
-    }
+    loadDefaultGrid();
 
     gridPanel = new GridPanel(sudoku);
     frame.add(gridPanel);
@@ -106,6 +105,18 @@ public class Window {
         // TODO proper error message
         e.printStackTrace();
       }
+    }
+  }
+
+  private void loadDefaultGrid() {
+    try {
+      sudoku.openFile(
+          new StringReader("0 6 0 3 0 0 8 0 4 " + "5 3 7 0 9 0 0 0 0 " + "0 4 0 0 0 6 3 0 7 "
+              + "0 9 0 0 5 1 2 3 8 " + "0 0 0 0 0 0 0 0 0 " + "7 1 3 6 2 0 0 4 0 "
+              + "3 0 6 4 0 0 0 1 0 " + "0 0 0 0 6 0 5 2 3 " + "1 0 2 0 0 9 0 8 0"));
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
   }
 

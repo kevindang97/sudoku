@@ -20,6 +20,8 @@ public class CellLabel extends JLabel implements MouseListener {
 
   private static final String FONT_NAME = "Monospaced";
   private static final int FONT_SIZE = 30;
+  private static final int BORDER_WIDTH = 1;
+  private static final int BORDER_MULTIPLIER = 3;
   private static final Color UNSELECTED_COLOR = Color.WHITE;
   private static final Color SELECTED_COLOR = Color.CYAN;
   private static final Color UNCHANGEABLE_COLOR = Color.LIGHT_GRAY;
@@ -29,13 +31,14 @@ public class CellLabel extends JLabel implements MouseListener {
   private Sudoku sudoku;
   private GridPanel gridPanel;
 
-  public CellLabel(int x, int y, Sudoku sudoku, GridPanel gridPanel, int borderWidth) {
+  public CellLabel(int x, int y, Sudoku sudoku, GridPanel gridPanel) {
     super();
     this.x = x;
     this.y = y;
     this.sudoku = sudoku;
     this.gridPanel = gridPanel;
     addMouseListener(this);
+    addKeyListener(gridPanel);
 
     if (sudoku.isCellChangeable(x, y)) {
       setBackground(UNSELECTED_COLOR);
@@ -50,20 +53,22 @@ public class CellLabel extends JLabel implements MouseListener {
     // draw borders
     if (x == 0 && y == 0) {
       // top left corner, draw all borders
-      setBorder(BorderFactory.createMatteBorder(borderWidth * 2, borderWidth * 2, borderWidth,
-          borderWidth, Color.BLACK));
+      setBorder(BorderFactory.createMatteBorder(BORDER_WIDTH * BORDER_MULTIPLIER,
+          BORDER_WIDTH * BORDER_MULTIPLIER, BORDER_WIDTH, BORDER_WIDTH, Color.BLACK));
     } else if (x == 0) {
       // leftmost column, draw all borders except top border
-      setBorder(BorderFactory.createMatteBorder(0, borderWidth * 2,
-          (y % 3 == 2) ? borderWidth * 2 : borderWidth, borderWidth, Color.BLACK));
+      setBorder(BorderFactory.createMatteBorder(0, BORDER_WIDTH * BORDER_MULTIPLIER,
+          (y % 3 == 2) ? BORDER_WIDTH * BORDER_MULTIPLIER : BORDER_WIDTH, BORDER_WIDTH,
+          Color.BLACK));
     } else if (y == 0) {
       // topmost row, draw all borders except left border
-      setBorder(BorderFactory.createMatteBorder(borderWidth * 2, 0, borderWidth,
-          (x % 3 == 2) ? borderWidth * 2 : borderWidth, Color.BLACK));
+      setBorder(BorderFactory.createMatteBorder(BORDER_WIDTH * BORDER_MULTIPLIER, 0, BORDER_WIDTH,
+          (x % 3 == 2) ? BORDER_WIDTH * BORDER_MULTIPLIER : BORDER_WIDTH, Color.BLACK));
     } else {
       // every other cell, draw only bottom and right borders
-      setBorder(BorderFactory.createMatteBorder(0, 0, (y % 3 == 2) ? borderWidth * 2 : borderWidth,
-          (x % 3 == 2) ? borderWidth * 2 : borderWidth, Color.BLACK));
+      setBorder(BorderFactory.createMatteBorder(0, 0,
+          (y % 3 == 2) ? BORDER_WIDTH * BORDER_MULTIPLIER : BORDER_WIDTH,
+          (x % 3 == 2) ? BORDER_WIDTH * BORDER_MULTIPLIER : BORDER_WIDTH, Color.BLACK));
     }
   }
 
@@ -87,7 +92,7 @@ public class CellLabel extends JLabel implements MouseListener {
   @Override
   public void mouseClicked(MouseEvent arg0) {
     if (!sudoku.isCellChangeable(x, y) || gridPanel.isCellSelected(x, y)) {
-      gridPanel.setCellSelected(-1, -1);
+      gridPanel.unselectCell();
     } else {
       gridPanel.setCellSelected(x, y);
       requestFocusInWindow();

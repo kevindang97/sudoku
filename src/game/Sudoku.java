@@ -171,8 +171,8 @@ public class Sudoku {
    */
   private boolean isBlockSolved(int block) {
     // get the top left corner of the block
-    int topLeftX = (block - 1) / 3;
-    int topLeftY = (block % 3) * 3 - 2;
+    int topLeftX = (block % 3) * 3;
+    int topLeftY = (block / 3) * 3;
 
     boolean[] nums = new boolean[10];
     for (int i = 0; i < 3; i++) {

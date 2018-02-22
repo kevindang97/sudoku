@@ -2,18 +2,18 @@ package gui;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.JPanel;
 import game.Sudoku;
 import game.SudokuListener;
 
-public class GridPanel extends JPanel implements SudokuListener {
+public class GridPanel extends JPanel implements SudokuListener, KeyListener {
 
   /**
    * Randomly generated serial version id
    */
   private static final long serialVersionUID = -3101919069301561588L;
-
-  private static final int BORDER_WIDTH = 1;
 
   private Sudoku sudoku;
   private CellLabel[][] cells;
@@ -39,7 +39,7 @@ public class GridPanel extends JPanel implements SudokuListener {
     // reversed x and y so that it creates cells row by row rather then column by column
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
-        cells[x][y] = new CellLabel(x, y, sudoku, this, BORDER_WIDTH);
+        cells[x][y] = new CellLabel(x, y, sudoku, this);
         c.gridx = x;
         c.gridy = y;
         add(cells[x][y], c);
@@ -52,17 +52,23 @@ public class GridPanel extends JPanel implements SudokuListener {
       throw new IllegalArgumentException("x and y parameters must be >= -1 && <= 9");
     }
 
-    int previousX = selectedX;
-    int previousY = selectedY;
+    unselectCell();
     selectedX = x;
     selectedY = y;
 
-    if (previousX != -1 && previousY != -1) {
-      cells[previousX][previousY].repaint();
-    }
-
     if (selectedX != -1 && selectedY != -1) {
       cells[selectedX][selectedY].repaint();
+    }
+  }
+
+  public void unselectCell() {
+    int previousX = selectedX;
+    int previousY = selectedY;
+    selectedX = -1;
+    selectedY = -1;
+
+    if (previousX != -1 && previousY != -1) {
+      cells[previousX][previousY].repaint();
     }
   }
 
@@ -74,5 +80,29 @@ public class GridPanel extends JPanel implements SudokuListener {
   public void sudokuChanged() {
     repaint();
   }
+
+  @Override
+  public void keyPressed(KeyEvent e) {
+    if (selectedX == -1 || selectedY == -1) {
+      return;
+    }
+
+    int keyCode = e.getKeyCode();
+    if (keyCode >= KeyEvent.VK_1 && keyCode <= KeyEvent.VK_9) {
+      int number = Integer.parseInt(KeyEvent.getKeyText(keyCode));
+      sudoku.setCell(selectedX, selectedY, number);
+      unselectCell();
+    } else if (keyCode == KeyEvent.VK_0 || keyCode == KeyEvent.VK_BACK_SPACE
+        || keyCode == KeyEvent.VK_DELETE) {
+      sudoku.setCell(selectedX, selectedY, 0);
+      unselectCell();
+    }
+  }
+
+  @Override
+  public void keyReleased(KeyEvent e) {}
+
+  @Override
+  public void keyTyped(KeyEvent e) {}
 
 }
