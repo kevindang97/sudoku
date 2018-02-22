@@ -31,6 +31,10 @@ public class Sudoku {
     return gridClone;
   }
 
+  public int getCell(int x, int y) {
+    return grid[x][y];
+  }
+
   /**
    * Sets the value of a single cell on the grid
    * 
