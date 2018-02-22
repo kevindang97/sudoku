@@ -6,9 +6,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import game.Sudoku;
-import game.SudokuListener;
 
-public class CellLabel extends JLabel implements SudokuListener {
+public class CellLabel extends JLabel {
 
   /**
    * Randomly generated serial version id
@@ -24,26 +23,26 @@ public class CellLabel extends JLabel implements SudokuListener {
     this.x = x;
     this.y = y;
     this.sudoku = sudoku;
-    this.sudoku.addListener(this);
 
     setHorizontalAlignment(SwingConstants.CENTER);
 
     // draw borders
     if (x == 0 && y == 0) {
       // top left corner, draw all borders
-      setBorder(BorderFactory.createMatteBorder(borderWidth, borderWidth, borderWidth, borderWidth,
-          Color.BLACK));
+      setBorder(BorderFactory.createMatteBorder(borderWidth * 2, borderWidth * 2, borderWidth,
+          borderWidth, Color.BLACK));
     } else if (x == 0) {
       // leftmost column, draw all borders except top border
-      setBorder(
-          BorderFactory.createMatteBorder(0, borderWidth, borderWidth, borderWidth, Color.BLACK));
+      setBorder(BorderFactory.createMatteBorder(0, borderWidth * 2,
+          (y % 3 == 2) ? borderWidth * 2 : borderWidth, borderWidth, Color.BLACK));
     } else if (y == 0) {
       // topmost row, draw all borders except left border
-      setBorder(
-          BorderFactory.createMatteBorder(borderWidth, 0, borderWidth, borderWidth, Color.BLACK));
+      setBorder(BorderFactory.createMatteBorder(borderWidth * 2, 0, borderWidth,
+          (x % 3 == 2) ? borderWidth * 2 : borderWidth, Color.BLACK));
     } else {
       // every other cell, draw only bottom and right borders
-      setBorder(BorderFactory.createMatteBorder(0, 0, borderWidth, borderWidth, Color.BLACK));
+      setBorder(BorderFactory.createMatteBorder(0, 0, (y % 3 == 2) ? borderWidth * 2 : borderWidth,
+          (x % 3 == 2) ? borderWidth * 2 : borderWidth, Color.BLACK));
     }
   }
 
@@ -54,10 +53,5 @@ public class CellLabel extends JLabel implements SudokuListener {
     } else {
       setText("");
     }
-  }
-
-  @Override
-  public void sudokuChanged() {
-    repaint();
   }
 }
