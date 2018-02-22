@@ -1,11 +1,19 @@
 package game;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Sudoku {
 
   private int[][] grid;
+  private List<SudokuListener> listeners;
 
   public Sudoku() {
     grid = new int[9][9];
+    listeners = new ArrayList<SudokuListener>();
   }
 
   /**
@@ -32,9 +40,59 @@ public class Sudoku {
    */
   public void setCell(int x, int y, int num) {
     if (num < 0 || num > 9) {
-      throw new IllegalArgumentException("Invalid input for cell");
+      throw new IllegalArgumentException("Invalid input for cell, number must be >= 0 && <= 9");
     }
     grid[x][y] = num;
+    sudokuChanged();
+  }
+
+  public void openFile(Reader r) throws IOException {
+    BufferedReader br = new BufferedReader(r);
+
+    List<Integer> inputNumbers = new ArrayList<Integer>();
+    int position = 0;
+    String line = br.readLine();
+    while (line != null) {
+      for (String s : line.split(" ")) {
+        int i = Integer.parseInt(s);
+        if (i < 0 || i > 9) {
+          throw new IOException("Invalid number in file, all numbers must be >= 0 && <= 9");
+        }
+        inputNumbers.add(i);
+        position++;
+        if (position > 80) {
+          break;
+        }
+      }
+      if (position > 80) {
+        break;
+      }
+      line = br.readLine();
+    }
+
+    if (inputNumbers.size() < 81) {
+      throw new IOException("Invalid amount of numbers in file, must contain 81 numbers");
+    }
+
+    for (int i = 0; i < 81; i++) {
+      setCell(i % 9, i / 9, inputNumbers.get(i));
+    }
+    sudokuChanged();
+  }
+
+  public void addListener(SudokuListener l) {
+    listeners.add(l);
+    sudokuChanged();
+  }
+
+  public void removeListener(SudokuListener l) {
+    listeners.remove(l);
+  }
+
+  private void sudokuChanged() {
+    for (SudokuListener l : listeners) {
+      l.sudokuChanged();
+    }
   }
 
   public boolean isGridSolved() {
