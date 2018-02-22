@@ -9,11 +9,21 @@ import java.util.List;
 public class Sudoku {
 
   private int[][] grid;
+  private boolean[][] changeable;
   private List<SudokuListener> listeners;
 
   public Sudoku() {
     grid = new int[9][9];
+    changeable = new boolean[9][9];
     listeners = new ArrayList<SudokuListener>();
+
+    // initialise default values in the 2D arrays
+    for (int i = 0; i < 9; i++) {
+      for (int j = 0; j < 9; j++) {
+        grid[i][j] = 0;
+        changeable[i][j] = true;
+      }
+    }
   }
 
   /**
@@ -46,8 +56,16 @@ public class Sudoku {
     if (num < 0 || num > 9) {
       throw new IllegalArgumentException("Invalid input for cell, number must be >= 0 && <= 9");
     }
+    if (!changeable[x][y]) {
+      throw new IllegalArgumentException("This cell is not changeable");
+    }
+
     grid[x][y] = num;
     sudokuChanged();
+  }
+
+  public boolean isCellChangeable(int x, int y) {
+    return changeable[x][y];
   }
 
   public void openFile(Reader r) throws IOException {
@@ -79,7 +97,12 @@ public class Sudoku {
     }
 
     for (int i = 0; i < 81; i++) {
-      setCell(i % 9, i / 9, inputNumbers.get(i));
+      grid[i % 9][i / 9] = inputNumbers.get(i);
+      if (inputNumbers.get(i) == 0) {
+        changeable[i % 9][i / 9] = true;
+      } else {
+        changeable[i % 9][i / 9] = false;
+      }
     }
     sudokuChanged();
   }

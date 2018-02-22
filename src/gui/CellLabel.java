@@ -22,6 +22,7 @@ public class CellLabel extends JLabel implements MouseListener {
   private static final int FONT_SIZE = 30;
   private static final Color UNSELECTED_COLOR = Color.WHITE;
   private static final Color SELECTED_COLOR = Color.CYAN;
+  private static final Color UNCHANGEABLE_COLOR = Color.LIGHT_GRAY;
 
   private int x;
   private int y;
@@ -36,7 +37,11 @@ public class CellLabel extends JLabel implements MouseListener {
     this.gridPanel = gridPanel;
     addMouseListener(this);
 
-    setBackground(UNSELECTED_COLOR);
+    if (sudoku.isCellChangeable(x, y)) {
+      setBackground(UNSELECTED_COLOR);
+    } else {
+      setBackground(UNCHANGEABLE_COLOR);
+    }
     setOpaque(true);
     setFont(new Font(FONT_NAME, Font.PLAIN, FONT_SIZE));
     setHorizontalAlignment(SwingConstants.CENTER);
@@ -70,7 +75,9 @@ public class CellLabel extends JLabel implements MouseListener {
       setText("");
     }
 
-    if (gridPanel.isCellSelected(x, y)) {
+    if (!sudoku.isCellChangeable(x, y)) {
+      setBackground(UNCHANGEABLE_COLOR);
+    } else if (gridPanel.isCellSelected(x, y)) {
       setBackground(SELECTED_COLOR);
     } else {
       setBackground(UNSELECTED_COLOR);
@@ -79,10 +86,11 @@ public class CellLabel extends JLabel implements MouseListener {
 
   @Override
   public void mouseClicked(MouseEvent arg0) {
-    if (gridPanel.isCellSelected(x, y)) {
+    if (!sudoku.isCellChangeable(x, y) || gridPanel.isCellSelected(x, y)) {
       gridPanel.setCellSelected(-1, -1);
     } else {
       gridPanel.setCellSelected(x, y);
+      requestFocusInWindow();
     }
     repaint();
   }

@@ -20,6 +20,9 @@ import game.Sudoku;
 
 public class Window {
 
+  private static final int WINDOW_WIDTH = 500;
+  private static final int WINDOW_HEIGHT = 500;
+
   JFrame frame;
   JFileChooser fileChooser;
   GridPanel gridPanel;
@@ -44,7 +47,7 @@ public class Window {
     frame = new JFrame("Sudoku");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setLayout(new BorderLayout());
-    frame.setSize(700, 700);
+    frame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     fileChooser = new JFileChooser();
     FileFilter sudokuFileFilter = new FileNameExtensionFilter("Sudoku files (.sud)", "sud");
