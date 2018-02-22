@@ -4,13 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import game.Sudoku;
@@ -50,21 +53,35 @@ public class Window {
     JMenuBar menuBar = new JMenuBar();
     frame.setJMenuBar(menuBar);
 
-    JButton btnOpen = new JButton("Open");
-    btnOpen.addActionListener(new ActionListener() {
+    JMenu menu = new JMenu("Menu");
+    menuBar.add(menu);
+
+    JMenuItem menuItemOpen = new JMenuItem("Open");
+    menuItemOpen.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
         fileOpen();
       }
     });
-    menuBar.add(btnOpen);
+    menuItemOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+    menu.add(menuItemOpen);
 
-    JButton btnCheck = new JButton("Check");
-    btnCheck.addActionListener(new ActionListener() {
+    JMenuItem menuItemCheck = new JMenuItem("Check");
+    menuItemCheck.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
         sudokuCheck();
       }
     });
-    menuBar.add(btnCheck);
+    menuItemCheck.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+    menu.add(menuItemCheck);
+
+    JMenuItem menuItemQuit = new JMenuItem("Quit");
+    menuItemQuit.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent arg0) {
+        quit();
+      }
+    });
+    menuItemQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
+    menu.add(menuItemQuit);
 
     sudoku = new Sudoku();
     for (int i = 0; i < 81; i++) {
@@ -91,6 +108,11 @@ public class Window {
 
   private void sudokuCheck() {
     // TODO temporary to allow me to manually do stuff
+    frame.repaint();
     System.out.println(sudoku.isGridSolved());
+  }
+
+  private void quit() {
+    System.exit(0);
   }
 }

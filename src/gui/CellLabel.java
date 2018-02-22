@@ -1,30 +1,46 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import game.Sudoku;
 
-public class CellLabel extends JLabel {
+public class CellLabel extends JLabel implements MouseListener {
 
   /**
    * Randomly generated serial version id
    */
   private static final long serialVersionUID = -6552405042955843824L;
 
+  private static final String FONT_NAME = "Monospaced";
+  private static final int FONT_SIZE = 30;
+  private static final Color UNSELECTED_COLOR = Color.WHITE;
+  private static final Color SELECTED_COLOR = Color.CYAN;
+
   private int x;
   private int y;
   private Sudoku sudoku;
+  private GridPanel gridPanel;
 
-  public CellLabel(int x, int y, Sudoku sudoku, int borderWidth) {
+  public CellLabel(int x, int y, Sudoku sudoku, GridPanel gridPanel, int borderWidth) {
     super();
     this.x = x;
     this.y = y;
     this.sudoku = sudoku;
+    this.gridPanel = gridPanel;
+    addMouseListener(this);
 
+    setBackground(UNSELECTED_COLOR);
+    setOpaque(true);
+    setFont(new Font(FONT_NAME, Font.PLAIN, FONT_SIZE));
     setHorizontalAlignment(SwingConstants.CENTER);
+    setPreferredSize(new Dimension(FONT_SIZE, FONT_SIZE));
 
     // draw borders
     if (x == 0 && y == 0) {
@@ -53,5 +69,33 @@ public class CellLabel extends JLabel {
     } else {
       setText("");
     }
+
+    if (gridPanel.isCellSelected(x, y)) {
+      setBackground(SELECTED_COLOR);
+    } else {
+      setBackground(UNSELECTED_COLOR);
+    }
   }
+
+  @Override
+  public void mouseClicked(MouseEvent arg0) {
+    if (gridPanel.isCellSelected(x, y)) {
+      gridPanel.setCellSelected(-1, -1);
+    } else {
+      gridPanel.setCellSelected(x, y);
+    }
+    repaint();
+  }
+
+  @Override
+  public void mouseEntered(MouseEvent e) {}
+
+  @Override
+  public void mouseExited(MouseEvent e) {}
+
+  @Override
+  public void mousePressed(MouseEvent e) {}
+
+  @Override
+  public void mouseReleased(MouseEvent e) {}
 }
