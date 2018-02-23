@@ -76,6 +76,13 @@ public class GridPanel extends JPanel implements SudokuListener, KeyListener {
     return (selectedX == x) && (selectedY == y);
   }
 
+  public void placeNum(int num) {
+    if (selectedX != -1 && selectedY != -1) {
+      sudoku.setCell(selectedX, selectedY, num);
+    }
+    unselectCell();
+  }
+
   @Override
   public void sudokuChanged() {
     repaint();
@@ -83,19 +90,45 @@ public class GridPanel extends JPanel implements SudokuListener, KeyListener {
 
   @Override
   public void keyPressed(KeyEvent e) {
-    if (selectedX == -1 || selectedY == -1) {
-      return;
-    }
-
     int keyCode = e.getKeyCode();
     if (keyCode >= KeyEvent.VK_1 && keyCode <= KeyEvent.VK_9) {
+      // handles top row of numbers
       int number = Integer.parseInt(KeyEvent.getKeyText(keyCode));
-      sudoku.setCell(selectedX, selectedY, number);
-      unselectCell();
+      placeNum(number);
     } else if (keyCode == KeyEvent.VK_0 || keyCode == KeyEvent.VK_BACK_SPACE
-        || keyCode == KeyEvent.VK_DELETE) {
-      sudoku.setCell(selectedX, selectedY, 0);
-      unselectCell();
+        || keyCode == KeyEvent.VK_DELETE || keyCode == KeyEvent.VK_NUMPAD0) {
+      // handles unsetting a cell back to 0
+      placeNum(0);
+    } else {
+      switch (keyCode) {
+        case KeyEvent.VK_NUMPAD1:
+          placeNum(1);
+          break;
+        case KeyEvent.VK_NUMPAD2:
+          placeNum(2);
+          break;
+        case KeyEvent.VK_NUMPAD3:
+          placeNum(3);
+          break;
+        case KeyEvent.VK_NUMPAD4:
+          placeNum(4);
+          break;
+        case KeyEvent.VK_NUMPAD5:
+          placeNum(5);
+          break;
+        case KeyEvent.VK_NUMPAD6:
+          placeNum(6);
+          break;
+        case KeyEvent.VK_NUMPAD7:
+          placeNum(7);
+          break;
+        case KeyEvent.VK_NUMPAD8:
+          placeNum(8);
+          break;
+        case KeyEvent.VK_NUMPAD9:
+          placeNum(9);
+          break;
+      }
     }
   }
 

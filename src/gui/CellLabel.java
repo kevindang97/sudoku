@@ -90,15 +90,7 @@ public class CellLabel extends JLabel implements MouseListener {
   }
 
   @Override
-  public void mouseClicked(MouseEvent arg0) {
-    if (!sudoku.isCellChangeable(x, y) || gridPanel.isCellSelected(x, y)) {
-      gridPanel.unselectCell();
-    } else {
-      gridPanel.setCellSelected(x, y);
-      requestFocusInWindow();
-    }
-    repaint();
-  }
+  public void mouseClicked(MouseEvent arg0) {}
 
   @Override
   public void mouseEntered(MouseEvent e) {}
@@ -107,7 +99,15 @@ public class CellLabel extends JLabel implements MouseListener {
   public void mouseExited(MouseEvent e) {}
 
   @Override
-  public void mousePressed(MouseEvent e) {}
+  public void mousePressed(MouseEvent e) {
+    if (!sudoku.isCellChangeable(x, y) || gridPanel.isCellSelected(x, y)) {
+      gridPanel.unselectCell();
+    } else {
+      gridPanel.setCellSelected(x, y);
+      requestFocusInWindow();
+    }
+    repaint();
+  }
 
   @Override
   public void mouseReleased(MouseEvent e) {}
