@@ -10,12 +10,17 @@ public class Sudoku {
 
   private int[][] grid;
   private boolean[][] changeable;
-  private List<SudokuListener> listeners;
+  private int cellsNotEmpty;
+  private List<SudokuListener> changeListeners;
+  private List<FinishListener> finishListeners;
 
   public Sudoku() {
     grid = new int[9][9];
     changeable = new boolean[9][9];
-    listeners = new ArrayList<SudokuListener>();
+    cellsNotEmpty = 81;
+
+    changeListeners = new ArrayList<SudokuListener>();
+    finishListeners = new ArrayList<FinishListener>();
 
     // initialise default values in the 2D arrays
     for (int i = 0; i < 9; i++) {
@@ -60,8 +65,20 @@ public class Sudoku {
       throw new IllegalArgumentException("This cell is not changeable");
     }
 
+    int previous = grid[x][y];
     grid[x][y] = num;
-    sudokuChanged();
+
+    if (previous == 0 && num != 0) {
+      // placing a new number in an empty cell
+      cellsNotEmpty--;
+    } else if (previous != 0 && num == 0) {
+      // removing an existing number to make a cell empty
+      cellsNotEmpty++;
+    }
+
+    if (previous != num) {
+      sudokuChanged();
+    }
   }
 
   public boolean isCellChangeable(int x, int y) {
@@ -96,29 +113,49 @@ public class Sudoku {
       throw new IOException("Invalid amount of numbers in file, must contain 81 numbers");
     }
 
+    cellsNotEmpty = 81;
     for (int i = 0; i < 81; i++) {
       grid[i % 9][i / 9] = inputNumbers.get(i);
       if (inputNumbers.get(i) == 0) {
         changeable[i % 9][i / 9] = true;
       } else {
         changeable[i % 9][i / 9] = false;
+        cellsNotEmpty--;
       }
     }
     sudokuChanged();
   }
 
-  public void addListener(SudokuListener l) {
-    listeners.add(l);
+  public void addChangeListener(SudokuListener l) {
+    changeListeners.add(l);
     sudokuChanged();
   }
 
-  public void removeListener(SudokuListener l) {
-    listeners.remove(l);
+  public void removeChangeListener(SudokuListener l) {
+    changeListeners.remove(l);
+  }
+
+  public void addFinishListener(FinishListener l) {
+    finishListeners.add(l);
+  }
+
+  public void removeFinishListener(FinishListener l) {
+    finishListeners.remove(l);
   }
 
   private void sudokuChanged() {
-    for (SudokuListener l : listeners) {
+    for (SudokuListener l : changeListeners) {
       l.sudokuChanged();
+    }
+
+    if (cellsNotEmpty == 0) {
+      sudokuFinished();
+    }
+  }
+
+  private void sudokuFinished() {
+    for (FinishListener l : finishListeners) {
+      l.sudokuFinished();
     }
   }
 
