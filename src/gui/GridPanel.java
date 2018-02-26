@@ -1,12 +1,10 @@
 package gui;
 
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 import game.FinishListener;
 import game.Sudoku;
 import game.SudokuListener;
@@ -18,8 +16,7 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
    */
   private static final long serialVersionUID = -3101919069301561588L;
 
-  private static final Color DEFAULT_BACKGROUND = UIManager.getColor("InternalFrame.background");
-  private static final Color WIN_BACKGROUND = Color.GREEN;
+
 
   private Sudoku sudoku;
   private CellLabel[][] cells;
@@ -31,7 +28,7 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
     super();
 
     setLayout(new GridBagLayout());
-    setBackground(DEFAULT_BACKGROUND);
+    setBackground(Style.DEFAULT_BACKGROUND);
 
     sudoku = s;
     sudoku.addChangeListener(this);
@@ -149,9 +146,9 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
   @Override
   public void sudokuFinished() {
     if (sudoku.isGridSolved()) {
-      setBackground(WIN_BACKGROUND);
+      setBackground(Style.WIN_BACKGROUND);
     } else {
-      setBackground(DEFAULT_BACKGROUND);
+      setBackground(Style.DEFAULT_BACKGROUND);
     }
   }
 }
