@@ -4,6 +4,10 @@ import java.awt.Color;
 import javax.swing.UIManager;
 
 public class Style {
+  // Frame stuff
+  public static final int MIN_WINDOW_WIDTH = 500;
+  public static final int MIN_WINDOW_HEIGHT = 500;
+
   // GridPanel stuff
   public static final Color DEFAULT_BACKGROUND = UIManager.getColor("InternalFrame.background");
   public static final Color WIN_BACKGROUND = Color.GREEN;

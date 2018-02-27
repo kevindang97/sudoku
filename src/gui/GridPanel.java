@@ -16,8 +16,6 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
    */
   private static final long serialVersionUID = -3101919069301561588L;
 
-
-
   private Sudoku sudoku;
   private CellLabel[][] cells;
 
