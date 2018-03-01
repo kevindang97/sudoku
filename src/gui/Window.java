@@ -1,6 +1,5 @@
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -19,6 +18,7 @@ import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import game.Sudoku;
+import net.miginfocom.swing.MigLayout;
 
 public class Window {
 
@@ -45,9 +45,9 @@ public class Window {
   private void initialise() {
     frame = new JFrame("Sudoku");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setLayout(new BorderLayout());
     frame.setMinimumSize(new Dimension(Style.MIN_WINDOW_WIDTH, Style.MIN_WINDOW_HEIGHT));
     frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+    frame.setLayout(new MigLayout("align 50% 50%"));
 
     fileChooser = new JFileChooser();
     FileFilter sudokuFileFilter = new FileNameExtensionFilter("Sudoku files (.sud)", "sud");
@@ -91,6 +91,8 @@ public class Window {
 
     gridPanel = new GridPanel(sudoku);
     frame.add(gridPanel);
+
+    frame.add(new InputPanel(gridPanel));
   }
 
   private void fileOpen() {

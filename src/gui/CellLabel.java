@@ -38,9 +38,9 @@ public class CellLabel extends JLabel implements MouseListener {
       setBackground(Style.UNCHANGEABLE_COLOR);
     }
     setOpaque(true);
-    setFont(new Font(Style.FONT_NAME, Font.PLAIN, Style.FONT_SIZE));
+    setFont(new Font(Style.FONT_NAME, Font.PLAIN, Style.CELL_FONT_SIZE));
     setHorizontalAlignment(SwingConstants.CENTER);
-    setPreferredSize(new Dimension(Style.FONT_SIZE, Style.FONT_SIZE));
+    setPreferredSize(new Dimension(Style.CELL_FONT_SIZE, Style.CELL_FONT_SIZE));
 
     // draw borders
     if (x == 0 && y == 0) {

@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import game.FinishListener;
 import game.Sudoku;
@@ -24,7 +25,7 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
   public GridPanel(Sudoku s) {
     super();
 
-    setLayout(new MigLayout("wrap 9, gap 0 0, align 50% 50%"));
+    setLayout(new MigLayout("wrap 9, gap 0 0"));
     setBackground(Style.DEFAULT_BACKGROUND);
 
     sudoku = s;
@@ -38,7 +39,7 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
         cells[x][y] = new CellLabel(x, y, sudoku, this);
-        add(cells[x][y], "sizegroup cell, w 40lp, h 40lp");
+        add(cells[x][y], "w 40lp, h 40lp");
       }
     }
   }
@@ -137,9 +138,8 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
   @Override
   public void sudokuFinished() {
     if (sudoku.isGridSolved()) {
-      setBackground(Style.WIN_BACKGROUND);
-    } else {
-      setBackground(Style.DEFAULT_BACKGROUND);
+      JOptionPane.showMessageDialog(this, "Congrats, you've won!", "Congratulations!",
+          JOptionPane.INFORMATION_MESSAGE);
     }
   }
 }
