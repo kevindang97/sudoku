@@ -6,9 +6,13 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.font.TextAttribute;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import game.Sudoku;
 
 public class CellLabel extends JLabel implements MouseListener {
@@ -22,6 +26,7 @@ public class CellLabel extends JLabel implements MouseListener {
   private int y;
   private Sudoku sudoku;
   private GridPanel gridPanel;
+  private Border border;
 
   public CellLabel(int x, int y, Sudoku sudoku, GridPanel gridPanel) {
     super();
@@ -45,44 +50,81 @@ public class CellLabel extends JLabel implements MouseListener {
     // draw borders
     if (x == 0 && y == 0) {
       // top left corner, draw all borders
-      setBorder(BorderFactory.createMatteBorder(Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER,
+      border = BorderFactory.createMatteBorder(Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER,
           Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER, Style.BORDER_WIDTH, Style.BORDER_WIDTH,
-          Color.BLACK));
+          Color.BLACK);
     } else if (x == 0) {
       // leftmost column, draw all borders except top border
-      setBorder(BorderFactory.createMatteBorder(0, Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER,
+      border = BorderFactory.createMatteBorder(0, Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER,
           (y % 3 == 2) ? Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER : Style.BORDER_WIDTH,
-          Style.BORDER_WIDTH, Color.BLACK));
+          Style.BORDER_WIDTH, Color.BLACK);
     } else if (y == 0) {
       // topmost row, draw all borders except left border
-      setBorder(BorderFactory.createMatteBorder(Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER, 0,
+      border = BorderFactory.createMatteBorder(Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER, 0,
           Style.BORDER_WIDTH,
           (x % 3 == 2) ? Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER : Style.BORDER_WIDTH,
-          Color.BLACK));
+          Color.BLACK);
     } else {
       // every other cell, draw only bottom and right borders
-      setBorder(BorderFactory.createMatteBorder(0, 0,
+      border = BorderFactory.createMatteBorder(0, 0,
           (y % 3 == 2) ? Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER : Style.BORDER_WIDTH,
           (x % 3 == 2) ? Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER : Style.BORDER_WIDTH,
-          Color.BLACK));
+          Color.BLACK);
     }
   }
 
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
+
+    Coord selectedCoord = gridPanel.getSelectedCoord();
+    int selectedBoxMinX = (selectedCoord.x == -1) ? -1 : selectedCoord.x / 3 * 3;
+    int selectedBoxMaxX = (selectedCoord.x == -1) ? -1 : selectedBoxMinX + 2;
+    int selectedBoxMinY = (selectedCoord.y == -1) ? -1 : selectedCoord.y / 3 * 3;
+    int selectedBoxMaxY = (selectedCoord.y == -1) ? -1 : selectedBoxMinY + 2;
+
+    boolean changeable = sudoku.isCellChangeable(x, y);
+    boolean selected = (x == selectedCoord.x && y == selectedCoord.y);
+    boolean highlighted = (x == selectedCoord.x || y == selectedCoord.y || (x >= selectedBoxMinX
+        && x <= selectedBoxMaxX && y >= selectedBoxMinY && y <= selectedBoxMaxY));
+
+    if (changeable && selected && sudoku.getCell(x, y) == 0) {
+      setBackground(Style.UNSELECTED_COLOR);
+    } else if (changeable && selected && sudoku.getCell(x, y) != 0) {
+      setBackground(Style.SELECTED_COLOR);
+    } else if (!changeable && selected) {
+      setBackground(Style.UNCHANGEABLE_SELECTED_COLOR);
+    } else if (changeable && highlighted) {
+      setBackground(Style.HIGHLIGHTED_COLOR);
+    } else if (!changeable && highlighted) {
+      setBackground(Style.UNCHANGEABLE_HIGHLIGHTED_COLOR);
+    } else if (!changeable) {
+      setBackground(Style.UNCHANGEABLE_COLOR);
+    } else {
+      setBackground(Style.UNSELECTED_COLOR);
+    }
+
+    if (changeable && selected && sudoku.getCell(x, y) == 0) {
+      setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createCompoundBorder(
+          BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder())));
+    } else {
+      setBorder(border);
+    }
+
+
     if (sudoku.getCell(x, y) != 0) {
       setText(Integer.toString(sudoku.getCell(x, y)));
     } else {
       setText("");
     }
 
-    if (!sudoku.isCellChangeable(x, y)) {
-      setBackground(Style.UNCHANGEABLE_COLOR);
-    } else if (gridPanel.isCellSelected(x, y)) {
-      setBackground(Style.SELECTED_COLOR);
+    int selectedNum = sudoku.getCell(selectedCoord.x, selectedCoord.y);
+    Map<TextAttribute, Object> fontAttributes = new HashMap<TextAttribute, Object>();
+    if (selectedNum != 0 && selectedNum == sudoku.getCell(x, y)) {
+      fontAttributes.put(TextAttribute.FOREGROUND, Style.SELECTED_TEXT_COLOR);
     } else {
-      setBackground(Style.UNSELECTED_COLOR);
+      fontAttributes.put(TextAttribute.FOREGROUND, Style.DEFAULT_TEXT_COLOR);
     }
+    setFont(getFont().deriveFont(fontAttributes));
   }
 
   @Override
@@ -96,10 +138,10 @@ public class CellLabel extends JLabel implements MouseListener {
 
   @Override
   public void mousePressed(MouseEvent e) {
-    if (!sudoku.isCellChangeable(x, y) || gridPanel.isCellSelected(x, y)) {
+    if (gridPanel.getSelectedCoord().x == x && gridPanel.getSelectedCoord().y == y) {
       gridPanel.unselectCell();
     } else {
-      gridPanel.setCellSelected(x, y);
+      gridPanel.setSelectedCell(x, y);
       requestFocusInWindow();
     }
     repaint();

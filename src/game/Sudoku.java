@@ -47,7 +47,11 @@ public class Sudoku {
   }
 
   public int getCell(int x, int y) {
-    return grid[x][y];
+    if (x < 0 || x > 8 || y < 0 || y > 8) {
+      return -1;
+    } else {
+      return grid[x][y];
+    }
   }
 
   /**

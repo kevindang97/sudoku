@@ -44,7 +44,7 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
     }
   }
 
-  public void setCellSelected(int x, int y) {
+  public void setSelectedCell(int x, int y) {
     if (x < -1 || x > 9 || y < -1 || y > 9) {
       throw new IllegalArgumentException("x and y parameters must be >= -1 && <= 9");
     }
@@ -58,6 +58,10 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
     }
   }
 
+  public Coord getSelectedCoord() {
+    return new Coord(selectedX, selectedY);
+  }
+
   public void unselectCell() {
     int previousX = selectedX;
     int previousY = selectedY;
@@ -69,15 +73,10 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
     }
   }
 
-  public boolean isCellSelected(int x, int y) {
-    return (selectedX == x) && (selectedY == y);
-  }
-
   public void placeNum(int num) {
-    if (selectedX != -1 && selectedY != -1) {
+    if (selectedX != -1 && selectedY != -1 && sudoku.isCellChangeable(selectedX, selectedY)) {
       sudoku.setCell(selectedX, selectedY, num);
     }
-    unselectCell();
   }
 
   @Override
@@ -124,6 +123,30 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
           break;
         case KeyEvent.VK_NUMPAD9:
           placeNum(9);
+          break;
+        case KeyEvent.VK_LEFT:
+        case KeyEvent.VK_A:
+          if (selectedX > 0) {
+            setSelectedCell(selectedX - 1, selectedY);
+          }
+          break;
+        case KeyEvent.VK_RIGHT:
+        case KeyEvent.VK_D:
+          if (selectedX < 8) {
+            setSelectedCell(selectedX + 1, selectedY);
+          }
+          break;
+        case KeyEvent.VK_UP:
+        case KeyEvent.VK_W:
+          if (selectedY > 0) {
+            setSelectedCell(selectedX, selectedY - 1);
+          }
+          break;
+        case KeyEvent.VK_DOWN:
+        case KeyEvent.VK_S:
+          if (selectedY < 8) {
+            setSelectedCell(selectedX, selectedY + 1);
+          }
           break;
       }
     }
