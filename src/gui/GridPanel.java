@@ -1,13 +1,12 @@
 package gui;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JPanel;
 import game.FinishListener;
 import game.Sudoku;
 import game.SudokuListener;
+import net.miginfocom.swing.MigLayout;
 
 public class GridPanel extends JPanel implements SudokuListener, FinishListener, KeyListener {
 
@@ -25,7 +24,7 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
   public GridPanel(Sudoku s) {
     super();
 
-    setLayout(new GridBagLayout());
+    setLayout(new MigLayout("wrap 9, gap 0 0, align 50% 50%"));
     setBackground(Style.DEFAULT_BACKGROUND);
 
     sudoku = s;
@@ -35,17 +34,11 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
     selectedX = -1;
     selectedY = -1;
 
-    GridBagConstraints c = new GridBagConstraints();
-    c.ipadx = 10;
-    c.ipady = 10;
-
     // reversed x and y so that it creates cells row by row rather then column by column
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
         cells[x][y] = new CellLabel(x, y, sudoku, this);
-        c.gridx = x;
-        c.gridy = y;
-        add(cells[x][y], c);
+        add(cells[x][y], "sizegroup cell, w 40lp, h 40lp");
       }
     }
   }
