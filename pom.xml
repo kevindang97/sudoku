@@ -6,7 +6,6 @@
   <name>Sudoku Game</name>
   <description>Full fledged sudoku game application</description>
   <build>
-    <sourceDirectory>src</sourceDirectory>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

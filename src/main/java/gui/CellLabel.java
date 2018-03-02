@@ -27,6 +27,7 @@ public class CellLabel extends JLabel implements MouseListener {
   private Sudoku sudoku;
   private GridPanel gridPanel;
   private Border border;
+  private Border selectedBorder;
 
   public CellLabel(int x, int y, Sudoku sudoku, GridPanel gridPanel) {
     super();
@@ -47,7 +48,7 @@ public class CellLabel extends JLabel implements MouseListener {
     setHorizontalAlignment(SwingConstants.CENTER);
     setPreferredSize(new Dimension(Style.CELL_FONT_SIZE, Style.CELL_FONT_SIZE));
 
-    // draw borders
+    // create borders
     if (x == 0 && y == 0) {
       // top left corner, draw all borders
       border = BorderFactory.createMatteBorder(Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER,
@@ -71,6 +72,9 @@ public class CellLabel extends JLabel implements MouseListener {
           (x % 3 == 2) ? Style.BORDER_WIDTH * Style.BORDER_MULTIPLIER : Style.BORDER_WIDTH,
           Color.BLACK);
     }
+
+    selectedBorder = BorderFactory.createCompoundBorder(border, BorderFactory.createCompoundBorder(
+        BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder()));
   }
 
   public void paintComponent(Graphics g) {
@@ -104,8 +108,7 @@ public class CellLabel extends JLabel implements MouseListener {
     }
 
     if (changeable && selected && sudoku.getCell(x, y) == 0) {
-      setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createCompoundBorder(
-          BorderFactory.createRaisedBevelBorder(), BorderFactory.createLoweredBevelBorder())));
+      setBorder(selectedBorder);
     } else {
       setBorder(border);
     }

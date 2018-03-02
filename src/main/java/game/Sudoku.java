@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import game.FinishListener;
+import game.SudokuListener;
 
 public class Sudoku {
 
