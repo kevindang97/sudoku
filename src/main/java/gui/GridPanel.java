@@ -39,7 +39,7 @@ public class GridPanel extends JPanel implements SudokuListener, FinishListener,
     for (int y = 0; y < 9; y++) {
       for (int x = 0; x < 9; x++) {
         cells[x][y] = new CellLabel(x, y, sudoku, this);
-        add(cells[x][y], "w 40lp, h 40lp");
+        add(cells[x][y], "w 48lp, h 48lp");
       }
     }
   }
