@@ -22,8 +22,12 @@ public class CellLabel extends JLabel implements MouseListener {
    */
   private static final long serialVersionUID = -6552405042955843824L;
 
-  private int x;
-  private int y;
+  private final int x;
+  private final int y;
+  private final int boxMinX;
+  private final int boxMinY;
+  private final int boxMaxX;
+  private final int boxMaxY;
   private Sudoku sudoku;
   private GridPanel gridPanel;
   private Border border;
@@ -33,6 +37,10 @@ public class CellLabel extends JLabel implements MouseListener {
     super();
     this.x = x;
     this.y = y;
+    boxMinX = x / 3 * 3;
+    boxMinY = y / 3 * 3;
+    boxMaxX = boxMinX + 2;
+    boxMaxY = boxMinY + 2;
     this.sudoku = sudoku;
     this.gridPanel = gridPanel;
     addMouseListener(this);
@@ -81,19 +89,22 @@ public class CellLabel extends JLabel implements MouseListener {
     super.paintComponent(g);
 
     Coord selectedCoord = gridPanel.getSelectedCoord();
+    int[][] grid = sudoku.getGrid();
+    int currentNum = grid[x][y];
     int selectedBoxMinX = (selectedCoord.x == -1) ? -1 : selectedCoord.x / 3 * 3;
     int selectedBoxMaxX = (selectedCoord.x == -1) ? -1 : selectedBoxMinX + 2;
     int selectedBoxMinY = (selectedCoord.y == -1) ? -1 : selectedCoord.y / 3 * 3;
     int selectedBoxMaxY = (selectedCoord.y == -1) ? -1 : selectedBoxMinY + 2;
 
+    // determine cell background colour
     boolean changeable = sudoku.isCellChangeable(x, y);
     boolean selected = (x == selectedCoord.x && y == selectedCoord.y);
     boolean highlighted = (x == selectedCoord.x || y == selectedCoord.y || (x >= selectedBoxMinX
         && x <= selectedBoxMaxX && y >= selectedBoxMinY && y <= selectedBoxMaxY));
 
-    if (changeable && selected && sudoku.getCell(x, y) == 0) {
+    if (changeable && selected && currentNum == 0) {
       setBackground(Style.UNSELECTED_COLOR);
-    } else if (changeable && selected && sudoku.getCell(x, y) != 0) {
+    } else if (changeable && selected && currentNum != 0) {
       setBackground(Style.SELECTED_COLOR);
     } else if (!changeable && selected) {
       setBackground(Style.UNCHANGEABLE_SELECTED_COLOR);
@@ -107,22 +118,48 @@ public class CellLabel extends JLabel implements MouseListener {
       setBackground(Style.UNSELECTED_COLOR);
     }
 
-    if (changeable && selected && sudoku.getCell(x, y) == 0) {
+    // determine cell border
+    if (changeable && selected && currentNum == 0) {
       setBorder(selectedBorder);
     } else {
       setBorder(border);
     }
 
 
-    if (sudoku.getCell(x, y) != 0) {
+    if (currentNum != 0) {
       setText(Integer.toString(sudoku.getCell(x, y)));
     } else {
       setText("");
     }
 
+    // determine cell text color
+    boolean invalid = false;
+    for (int i = 0; i < 9; i++) {
+      if ((i != x && grid[i][y] == currentNum) || (i != y && grid[x][i] == currentNum)) {
+        invalid = true;
+        break;
+      }
+    }
+    for (int i = boxMinX; i <= boxMaxX; i++) {
+      for (int j = boxMinY; j <= boxMaxY; j++) {
+        if (i == x && j == y) {
+          continue;
+        }
+        if (grid[i][j] == currentNum) {
+          invalid = true;
+          break;
+        }
+      }
+      if (invalid) {
+        break;
+      }
+    }
+
     int selectedNum = sudoku.getCell(selectedCoord.x, selectedCoord.y);
     Map<TextAttribute, Object> fontAttributes = new HashMap<TextAttribute, Object>();
-    if (selectedNum != 0 && selectedNum == sudoku.getCell(x, y)) {
+    if (invalid) {
+      fontAttributes.put(TextAttribute.FOREGROUND, Style.INVALID_TEXT_COLOR);
+    } else if (selectedNum != 0 && selectedNum == sudoku.getCell(x, y)) {
       fontAttributes.put(TextAttribute.FOREGROUND, Style.SELECTED_TEXT_COLOR);
     } else {
       fontAttributes.put(TextAttribute.FOREGROUND, Style.DEFAULT_TEXT_COLOR);
