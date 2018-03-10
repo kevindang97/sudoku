@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import game.FinishListener;
-import game.SudokuListener;
 
 public class Sudoku {
 
@@ -37,7 +35,7 @@ public class Sudoku {
    * Returns a copy of the grid. A copy is used so the public can't grab a reference to the actual
    * private grid.
    * 
-   * @return
+   * @return A copy of the internally used 2D sudoku grid
    */
   public int[][] getGrid() {
     // going to have to clone a 2d array, so I can't use Arrays.cloneof()
@@ -57,11 +55,11 @@ public class Sudoku {
   }
 
   /**
-   * Sets the value of a single cell on the grid
+   * Sets the value of a single cell on the grid.
    * 
-   * @param x x-coord of the cell
-   * @param y y-coord of the cell
-   * @param num number to be placed in the cell
+   * @param x - x-coord of the cell
+   * @param y - y-coord of the cell
+   * @param num - number to be placed in the cell
    */
   public void setCell(int x, int y, int num) {
     if (num < 0 || num > 9) {
@@ -87,10 +85,26 @@ public class Sudoku {
     }
   }
 
+  /**
+   * Simple getter to determine if a cell can be changed or not.
+   * 
+   * @param x - x-coord of the cell
+   * @param y - y-coord of the cell
+   * @return true if the cell is changeable, false otherwise
+   */
   public boolean isCellChangeable(int x, int y) {
     return changeable[x][y];
   }
 
+  /**
+   * Opens a file and reads its contents into a new sudoku grid. In the case of an error the
+   * previous grid is preserved. The source file must contain at least 81 numbers, whitespace
+   * separated. The first 81 characters are read into the grid. As a generic Reader is used other
+   * sources can be used as well, such as a StringReader.
+   * 
+   * @param r - Reader source of the new sudoku grid, generally this is a fileReader or stringReader
+   * @throws IOException
+   */
   public void openFile(Reader r) throws IOException {
     BufferedReader br = new BufferedReader(r);
 
@@ -132,23 +146,46 @@ public class Sudoku {
     sudokuChanged();
   }
 
+  /**
+   * Adds a new SudokuListener.
+   * 
+   * @param l - SudokuListener to be added
+   */
   public void addChangeListener(SudokuListener l) {
     changeListeners.add(l);
     sudokuChanged();
   }
 
+  /**
+   * Removes a SudokuListener.
+   * 
+   * @param l - SudokuListener to be removed
+   */
   public void removeChangeListener(SudokuListener l) {
     changeListeners.remove(l);
   }
 
+  /**
+   * Adds a new FinishListener.
+   * 
+   * @param l - FinishListener to be added
+   */
   public void addFinishListener(FinishListener l) {
     finishListeners.add(l);
   }
 
+  /**
+   * Removes a FinishListener.
+   * 
+   * @param l - FinishListener to be removed
+   */
   public void removeFinishListener(FinishListener l) {
     finishListeners.remove(l);
   }
 
+  /**
+   * Calls the SudokuListeners on the entire grid.
+   */
   private void sudokuChanged() {
     for (SudokuListener l : changeListeners) {
       l.sudokuChanged();
@@ -159,12 +196,20 @@ public class Sudoku {
     }
   }
 
+  /**
+   * Calls the FinishListeners.
+   */
   private void sudokuFinished() {
     for (FinishListener l : finishListeners) {
       l.sudokuFinished();
     }
   }
 
+  /**
+   * Checks the entire grid to see if it is validly solved.
+   * 
+   * @return true if the sudoku grid is validly solved
+   */
   public boolean isGridSolved() {
     for (int i = 0; i < 9; i++) {
       if (!(isRowSolved(i) && isColSolved(i) && isBlockSolved(i))) {
@@ -174,7 +219,18 @@ public class Sudoku {
     return true;
   }
 
+  /**
+   * Checks to see if an entire row is validly solved.
+   * 
+   * @param row - Row number to be checked. Valid input is: [0,8], where 0 is the topmost row and 8
+   *        is the bottom-most row
+   * @return
+   */
   private boolean isRowSolved(int row) {
+    if (row < 0 || row > 8) {
+      throw new IllegalArgumentException("Invalid row number used: " + row);
+    }
+
     boolean[] nums = new boolean[10];
     for (int i = 0; i < 9; i++) {
       int cellNum = grid[row][i];
@@ -189,7 +245,18 @@ public class Sudoku {
     return true;
   }
 
+  /**
+   * Checks to see if an entire column is validly solved.
+   * 
+   * @param col - Column number to be checked. Valid input is: [0,8], where 0 is the leftmost column
+   *        and 8 is the rightmost column
+   * @return
+   */
   private boolean isColSolved(int col) {
+    if (col < 0 || col > 8) {
+      throw new IllegalArgumentException("Invalid col number used: " + col);
+    }
+
     boolean[] nums = new boolean[10];
     for (int i = 0; i < 9; i++) {
       int cellNum = grid[col][i];
@@ -205,14 +272,21 @@ public class Sudoku {
   }
 
   /**
-   * Checks to see if a block (a 3x3 group of cells in the grid) contains all 9 unique numbers.
-   * Blocks are number 1 to 9 from top left, row by row. So block 3 is the top right block, block 4
-   * is the middle row left block, etc.
+   * Checks to see if a block (a 3x3 group of cells in the grid) is validly solved.
    * 
-   * @param block
+   * @param block - Block number to be checked. Valid input is: [0,8], where the blocks are numbered
+   *        like so: <br>
+   *        0 1 2 <br>
+   *        3 4 5 <br>
+   *        6 7 8
    * @return
    */
   private boolean isBlockSolved(int block) {
+    if (block < 0 || block > 8) {
+      throw new IllegalArgumentException("Invalid block number used: " + block);
+    }
+
+
     // get the top left corner of the block
     int topLeftX = (block % 3) * 3;
     int topLeftY = (block / 3) * 3;

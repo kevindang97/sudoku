@@ -1,14 +1,12 @@
 package gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.font.TextAttribute;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -25,25 +23,20 @@ public class CellLabel extends JLabel implements MouseListener {
 
   private final int x;
   private final int y;
-  private final int boxMinX;
-  private final int boxMinY;
-  private final int boxMaxX;
-  private final int boxMaxY;
   private Sudoku sudoku;
   private GridPanel gridPanel;
+  private Set<CellLabel> adjacent;
   private Border border;
   private Border selectedBorder;
+  private Border unchangeableBorder;
 
   public CellLabel(int x, int y, Sudoku sudoku, GridPanel gridPanel) {
     super();
     this.x = x;
     this.y = y;
-    boxMinX = x / 3 * 3;
-    boxMinY = y / 3 * 3;
-    boxMaxX = boxMinX + 2;
-    boxMaxY = boxMinY + 2;
     this.sudoku = sudoku;
     this.gridPanel = gridPanel;
+    adjacent = new HashSet<CellLabel>();
     addMouseListener(this);
     addKeyListener(gridPanel);
 
@@ -84,42 +77,52 @@ public class CellLabel extends JLabel implements MouseListener {
 
     selectedBorder = BorderFactory.createCompoundBorder(border,
         BorderFactory.createCompoundBorder(
-            BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.WHITE, Color.GRAY),
-            BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.WHITE, Color.GRAY)));
+            BorderFactory.createBevelBorder(BevelBorder.RAISED,
+                Style.SELECTED_BORDER_COLOR_HIGHLIGHT, Style.SELECTED_BORDER_COLOR_SHADOW),
+            BorderFactory.createBevelBorder(BevelBorder.LOWERED,
+                Style.SELECTED_BORDER_COLOR_HIGHLIGHT, Style.SELECTED_BORDER_COLOR_SHADOW)));
+
+    unchangeableBorder =
+        BorderFactory.createCompoundBorder(border,
+            BorderFactory.createCompoundBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED,
+                Style.UNCHANGEABLE_BORDER_COLOR_HIGHLIGHT, Style.UNCHANGEABLE_BORDER_COLOR_SHADOW),
+                BorderFactory.createBevelBorder(BevelBorder.LOWERED,
+                    Style.UNCHANGEABLE_BORDER_COLOR_HIGHLIGHT,
+                    Style.UNCHANGEABLE_BORDER_COLOR_SHADOW)));
+  }
+
+  public int getNum() {
+    return sudoku.getCell(x, y);
+  }
+
+  public void setAdjacent(Set<CellLabel> s) {
+    adjacent = s;
   }
 
   private boolean isInvalid() {
-    int[][] grid = sudoku.getGrid();
-    int currentNum = grid[x][y];
+    int currentNum = sudoku.getCell(x, y);
 
     if (currentNum == 0) {
       return false;
     }
 
-    // check for duplicate nums along the row and column
-    for (int i = 0; i < 9; i++) {
-      if ((i != x && grid[i][y] == currentNum) || (i != y && grid[x][i] == currentNum)) {
-        return true;
+    for (CellLabel c : adjacent) {
+      if (c == this) {
+        continue;
       }
-    }
-
-    // check 3x3 box now
-    for (int i = boxMinX; i <= boxMaxX; i++) {
-      for (int j = boxMinY; j <= boxMaxY; j++) {
-        if (i == x && j == y) {
-          continue;
-        }
-        if (grid[i][j] == currentNum) {
-          return true;
-        }
+      if (c.getNum() == currentNum) {
+        return true;
       }
     }
 
     return false;
   }
 
+  private int apple = 0;
+
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
+    System.out.println("yo, from (" + x + ", " + y + "), I've been called : " + apple++ + " times");
 
     int[][] grid = sudoku.getGrid();
     int currentNum = grid[x][y];
@@ -140,9 +143,17 @@ public class CellLabel extends JLabel implements MouseListener {
 
 
     if (invalid) {
-      setBackground(Style.INVALID_COLOR);
+      if (changeable) {
+        setBackground(Style.INVALID_COLOR);
+      } else {
+        setBackground(Style.UNCHANGEABLE_INVALID_COLOR);
+      }
     } else if (selectedNum != 0 && selectedNum == currentNum) {
-      setBackground(Style.NUM_HIGHLIGHT_COLOR);
+      if (changeable) {
+        setBackground(Style.NUM_HIGHLIGHTED_COLOR);
+      } else {
+        setBackground(Style.UNCHANGEABLE_NUM_HIGHLIGHTED_COLOR);
+      }
     } else if (changeable && selected && currentNum == 0) {
       setBackground(Style.UNSELECTED_COLOR);
     } else if (changeable && selected && currentNum != 0) {
@@ -152,7 +163,7 @@ public class CellLabel extends JLabel implements MouseListener {
     } else if (changeable && highlighted) {
       setBackground(Style.ADJ_HIGHLIGHTED_COLOR);
     } else if (!changeable && highlighted) {
-      setBackground(Style.UNCHANGEABLE_HIGHLIGHTED_COLOR);
+      setBackground(Style.UNCHANGEABLE_ADJ_HIGHLIGHTED_COLOR);
     } else if (!changeable) {
       setBackground(Style.UNCHANGEABLE_COLOR);
     } else {
@@ -160,19 +171,19 @@ public class CellLabel extends JLabel implements MouseListener {
     }
 
     // set cell text color
-    Map<TextAttribute, Object> fontAttributes = new HashMap<TextAttribute, Object>();
     if (invalid) {
-      fontAttributes.put(TextAttribute.FOREGROUND, Style.INVALID_TEXT_COLOR);
+      setForeground(Style.INVALID_TEXT_COLOR);
     } else if (selectedNum != 0 && selectedNum == sudoku.getCell(x, y)) {
-      fontAttributes.put(TextAttribute.FOREGROUND, Style.NUM_HIGHLIGHT_TEXT_COLOR);
+      setForeground(Style.NUM_HIGHLIGHTED_TEXT_COLOR);
     } else {
-      fontAttributes.put(TextAttribute.FOREGROUND, Style.DEFAULT_TEXT_COLOR);
+      setForeground(Style.DEFAULT_TEXT_COLOR);
     }
-    setFont(getFont().deriveFont(fontAttributes));
 
     // set cell border
     if (changeable && selected) {
       setBorder(selectedBorder);
+    } else if (!changeable && selected) {
+      setBorder(unchangeableBorder);
     } else {
       setBorder(border);
     }
@@ -202,7 +213,6 @@ public class CellLabel extends JLabel implements MouseListener {
       gridPanel.setSelectedCell(x, y);
       requestFocusInWindow();
     }
-    repaint();
   }
 
   @Override

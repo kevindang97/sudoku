@@ -20,7 +20,10 @@ public class Style {
   public static final int BORDER_WIDTH = 1;
   public static final int BORDER_MULTIPLIER = 3;
   public static final Color BORDER_COLOR = Color.BLACK;
-  public static final Color SELECTED_BORDER_COLOR = Color.WHITE;
+  public static final Color SELECTED_BORDER_COLOR_HIGHLIGHT = Color.WHITE;
+  public static final Color SELECTED_BORDER_COLOR_SHADOW = Color.GRAY;
+  public static final Color UNCHANGEABLE_BORDER_COLOR_HIGHLIGHT = Color.GRAY.darker();
+  public static final Color UNCHANGEABLE_BORDER_COLOR_SHADOW = Color.BLACK;
 
   // Cell types:
   // Unselected - Standard cell that can be changed
@@ -31,19 +34,21 @@ public class Style {
   // Invalid - Cells that conflict with other cells, i.e. two 4s in the same row
 
   // Cell background colors
-  // Custom colors sourced from: htmlcolorcodes.com
+  // Custom colors sourced from: https://htmlcolorcodes.com/color-chart/
   public static final Color UNSELECTED_COLOR = Color.WHITE;
   public static final Color SELECTED_COLOR = UNSELECTED_COLOR;
   public static final Color ADJ_HIGHLIGHTED_COLOR = new Color(224, 224, 224);
-  public static final Color NUM_HIGHLIGHT_COLOR = Color.BLUE.brighter();
-  public static final Color INVALID_COLOR = Color.RED;
+  public static final Color NUM_HIGHLIGHTED_COLOR = new Color(13, 71, 161);
+  public static final Color INVALID_COLOR = new Color(255, 0, 0);
   public static final Color UNCHANGEABLE_COLOR = new Color(189, 189, 189);
   public static final Color UNCHANGEABLE_SELECTED_COLOR = UNCHANGEABLE_COLOR;
-  public static final Color UNCHANGEABLE_HIGHLIGHTED_COLOR = new Color(158, 158, 158);
+  public static final Color UNCHANGEABLE_ADJ_HIGHLIGHTED_COLOR = new Color(158, 158, 158);
+  public static final Color UNCHANGEABLE_NUM_HIGHLIGHTED_COLOR = new Color(0, 0, 180);
+  public static final Color UNCHANGEABLE_INVALID_COLOR = new Color(180, 0, 0);
 
   // Cell text colors
   public static final Color DEFAULT_TEXT_COLOR = Color.BLACK;
-  public static final Color NUM_HIGHLIGHT_TEXT_COLOR = Color.WHITE;
+  public static final Color NUM_HIGHLIGHTED_TEXT_COLOR = Color.WHITE;
   public static final Color INVALID_TEXT_COLOR = Color.WHITE;
 
   // InputPanel specific stuff
