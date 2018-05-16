@@ -12,3 +12,22 @@ Current plan of additional features:
 * Grid generation with varying difficulties: https://dlbeer.co.nz/articles/sudoku.html
 * (Maybe) Auto resizing support
 * (Maybe) Make it prettier
+
+## Development
+
+Sudoku is structured in a way that supports [Maven][maven].
+
+Development is supported on the following IDEs:
+
+### Eclipse
+
+Sudoku can be imported into [Eclipse][eclipse] as a Maven project. Once cloned, in Eclipse,
+
+1. Select `File -> Import`,
+1. Select `Maven -> Existing Maven Projects`,
+1. Select `Browse`, and
+1. Navigate to, and select, the cloned directory where `pom.xml` exists.
+1. Click `Finish`.
+
+[eclipse]: https://www.eclipse.org
+[maven]: https://maven.apache.org/what-is-maven.html
