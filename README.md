@@ -15,9 +15,9 @@ For now, Sudoku input files can be used, which consist of plain text files with 
 
 ## Development
 
-Sudoku is structured in a way that supports [Maven][maven].
+Sudoku is structured in a way that supports being imported as a [Maven project][maven] into your IDE of choice.
 
-Development is supported on the following IDEs:
+Supported IDEs include:
 
 ### Eclipse
 
